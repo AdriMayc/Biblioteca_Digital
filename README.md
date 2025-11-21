@@ -11,19 +11,19 @@ Condições estabelecidas para a realização do projeto:
 - Aplicação prática no contexto de Ciência de Dados
 
 Imagens prévias do projeto:
-> - [Biblioteca Digital](00-biblioteca.md)
+> - [Biblioteca Digital](readmes/00-biblioteca.md)
 
 ##  🔶 Documentação por Módulo
 Cada arquivo contém um conjunto de responsabilidades:
  
-1. [livros.py](01-livros.md)
-2. [usuarios.py](02-usuarios.md)
-3. [emprestimos.py](03-emprestimos.md)
-4. [relatorios.py](04-relatorios.md)
-5. [gerenciador.py](05-gerenciador.md)
-6. [console.py](06-console.md)
-7. [helpers.py](07-helpers.md)
-8. [main.py](08-main.md)
+1. [livros.py](readmes/01-livros.md)
+2. [usuarios.py](readmes/02-usuarios.md)
+3. [emprestimos.py](readmes/03-emprestimos.md)
+4. [relatorios.py](readmes/04-relatorios.md)
+5. [gerenciador.py](readmes/05-gerenciador.md)
+6. [console.py](readmes/06-console.md)
+7. [helpers.py](readmes/07-helpers.md)
+8. [main.py](readmes/08-main.md)
 
 ##  🔶 Estruturas Utilizadas
 
@@ -132,7 +132,7 @@ O **Sistema Biblioteca Digital** surge para resolver essas questões de forma cl
 
 O relatório completo com explicações técnicas, justificativas e análise de desempenho encontra-se em:
 
-> [Relatório do Projeto](relatorio.md)
+> [Relatório do Projeto](readmes/relatorio.md)
 
 ## 🔷 Encerramento
 
