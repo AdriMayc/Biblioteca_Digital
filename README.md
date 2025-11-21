@@ -144,7 +144,7 @@ A execução deste sistema é resultado do trabalho colaborativo de:
 
 🔹**Adriano Mayco** – Desenvolveu a estrutura principal do projeto, integrou e modularizou os módulos, criou a interface visual em Tkinter, supervisionou as branches no GitHub e revisou a documentação.
 
-🔹**Alex Mender** - Desenvolvimento de funções específicas, com ênfase na criação de empréstimos e elaboração de relatórios.
+🔹**Alex Mendes** - Desenvolvimento de funções específicas, com ênfase na criação de empréstimos e elaboração de relatórios.
 
 🔹**João Vitor Domingue** - Desenvolvimento de funções associadas a usuários e livros, assegurando que o registro, a listagem e a manipulação de dados fossem precisos.
 
