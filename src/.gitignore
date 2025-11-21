@@ -1,0 +1,6 @@
+# Ignorar a pasta de cache do Python
+__pycache__/
+
+# Ignorar arquivos de teste temporários
+teste_alex.py
+teste_relatorios.py
