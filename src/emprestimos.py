@@ -1,82 +1,116 @@
 from datetime import datetime
+from livros import livros   # Importa a lista de livros que está na memória
+from usuarios import usuarios   # Importa o dicionário de usuários
 
 # Estruturas de Dados Globais
-fila_emprestimos = []  # Fila (FIFO) - O primeiro que pede é o primeiro a levar
-historico = []         # Lista para guardar tudo que aconteceu
+fila_emprestimos = []   # fila FIFO
+historico = []          # lista normal para log
 
-def registrar_emprestimo(id_usuario, id_livro, lista_livros):
-    """
-    Adiciona um pedido de empréstimo à fila se o livro estiver disponível.
-    Complexidade: O(1) para inserir na fila, O(n) para buscar o livro.
-    """
-    # 1. Buscar o livro e verificar a disponibilidade (O(n) - busca linear)
+def registrar_emprestimo(id_usuario, id_livro):
+    print("\n--- Registrar Empréstimo ---")
+
+    # 1. Conversão e Validação dos dados vindos da Interface
+    try:
+        id_usuario = int(id_usuario)
+        id_livro = int(id_livro)
+    except ValueError:
+        print("Erro: Os IDs devem ser números inteiros.")
+        return "Erro de Formato"
+
+    # 2. Validar se Usuário existe
+    if id_usuario not in usuarios:
+        print(f"Erro: Usuário com ID {id_usuario} não encontrado.")
+        return "Usuário Inexistente"
+
+    # 3. Buscar o Livro na lista
     livro_encontrado = None
-    for livro in lista_livros:
+    for livro in livros:
         if livro.get("id") == id_livro:
             livro_encontrado = livro
             break
-    
+
     if livro_encontrado is None:
-        return "Erro: Livro não encontrado."
-        
-    # 2. Se SIM, registra e atualiza
+        print(f"Erro: Livro com ID {id_livro} não encontrado.")
+        return "Livro Inexistente"
+
+    # 4. Verificar disponibilidade
+    if not livro_encontrado["disponivel"]:
+        print(f"Indisponível: O livro '{livro_encontrado['titulo']}' já está emprestado.")
+        return "Livro Ocupado"
+
+    # 5. Registrar empréstimo
+    # DICA: Adicionei o nome e título para o histórico ficar mais legível na tela
+    nome_usuario = usuarios[id_usuario]['nome']
+    titulo_livro = livro_encontrado['titulo']
+
+    registro = {
+        "tipo": "Empréstimo",
+        "usuario_id": id_usuario,
+        "usuario_nome": nome_usuario, 
+        "livro_id": id_livro,
+        "livro_titulo": titulo_livro,
+        "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    fila_emprestimos.append(registro)
+    historico.append(registro)
+    
+    # Atualiza o status do livro para Indisponível
+    livro_encontrado["disponivel"] = False
+
+    print(f"Sucesso! '{titulo_livro}' emprestado para {nome_usuario}.")
+    return "Sucesso"
+
+
+def registrar_devolucao(id_livro):
+    print("\n--- Registrar Devolução ---")
+
+    # Validação da entrada
+    try:
+        id_livro = int(id_livro)
+    except ValueError:
+        print("Erro: ID do livro inválido.")
+        return "Erro Formato"
+
+    # Buscar livro
+    livro_encontrado = None
+    for livro in livros:
+        if livro.get("id") == id_livro:
+            livro_encontrado = livro
+            break
+
+    if livro_encontrado is None:
+        print("Erro: Livro não encontrado na base de dados.")
+        return "Não Encontrado"
+
     if livro_encontrado["disponivel"]:
-        
-        # Cria o registro de empréstimo
-        registro_emprestimo = {
-            "tipo": "Empréstimo",
-            "usuario_id": id_usuario,
-            "livro_id": id_livro,
-            "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-        
-        # Adiciona à fila de empréstimos (O(1))
-        fila_emprestimos.append(registro_emprestimo)
-        
-        # Adiciona ao histórico (para fins de registro completo)
-        historico.append(registro_emprestimo)
-        
-        # Marca o livro como indisponível
-        livro_encontrado["disponivel"] = False
-        
-        return "Empréstimo realizado com sucesso. Livro marcado como indisponível."
-    
-    # 3. Se NÃO, retorna indisponível
-    else:
-        return "Livro indisponível para empréstimo."
+        print(f"Atenção: O livro '{livro_encontrado['titulo']}' já consta como disponível.")
+        return "Já Disponível"
+
+    # Registrar devolução
+    livro_encontrado["disponivel"] = True
+
+    registro = {
+        "tipo": "Devolução",
+        "livro_id": id_livro,
+        "livro_titulo": livro_encontrado['titulo'],
+        "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    historico.append(registro)
+
+    print(f"Devolução confirmada: '{livro_encontrado['titulo']}' está disponível novamente.")
+    return "Sucesso"
 
 
-def registrar_devolucao(id_livro, lista_livros):
-    """
-    Registra a devolução e atualiza o status do livro.
-    Complexidade: O(n) pois precisa buscar o livro na lista.
-    """
-    # 1. Busque o livro na 'lista_livros' e marque "disponivel": True.
-    livro_encontrado = None
-    for livro in lista_livros:
-        if livro.get("id") == id_livro:
-            livro_encontrado = livro
-            break
-            
-    if livro_encontrado is None:
-        return "Erro: Livro não encontrado."
-        
-    # Se o livro for encontrado:
-    if not livro_encontrado["disponivel"]: # Verifica se ele estava emprestado
-        
-        # Marca o livro como disponível
-        livro_encontrado["disponivel"] = True
-        
-        # 2. Registre essa ação na lista 'historico'
-        registro_devolucao = {
-            "tipo": "Devolução",
-            "livro_id": id_livro,
-            "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-        
-        historico.append(registro_devolucao)
-        
-        return "Devolução registrada com sucesso. Livro marcado como disponível."
-        
-    else:
-        return "O livro já estava marcado como disponível."
+def listar_historico():
+    # Essa função imprime no console, mas a Interface lê a lista 'historico' diretamente.
+    # Mantivemos aqui para compatibilidade.
+    print("\n=== Histórico de Empréstimos e Devoluções ===")
+
+    if not historico:
+        print("Nenhum registro encontrado.")
+        return
+
+    for evento in historico:
+        print(evento)

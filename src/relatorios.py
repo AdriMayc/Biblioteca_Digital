@@ -1,19 +1,32 @@
+# relatorios.py
+# Gera listagens formatadas para o Console da Interface
+
+# Importamos apenas para garantir que as listas existam, 
+# mas as funções recebem os dados como argumentos da Interface.
+from livros import livros
+from emprestimos import historico
+
+
 def relatorio_livros_disponiveis(lista_livros):
     """
     Lista todos os livros que estão disponíveis.
-    Complexidade: O(n) pois percorre toda a lista de livros.
     """
-    print("\n--- LIVROS DISPONÍVEIS ---")
+    print("\n--- RELATÓRIO: LIVROS DISPONÍVEIS ---")
     encontrados = 0
     
+    if not lista_livros:
+        print("A base de dados de livros está vazia.")
+        return 0
+
     for livro in lista_livros:
         if livro.get("disponivel") is True:
-            # Imprime os detalhes do livro de forma limpa
-            print(f"ID: {livro['id']} | Título: {livro['titulo']} | Autor: {livro['autor']}")
+            print(f"[ID {livro['id']}] {livro['titulo']} | Autor: {livro['autor']}")
             encontrados += 1
             
     if encontrados == 0:
-        print("Nenhum livro disponível no momento.")
+        print("Nenhum livro disponível no momento (todos emprestados).")
+    else:
+        print(f"Total disponíveis: {encontrados}")
         
     return encontrados
 
@@ -21,42 +34,52 @@ def relatorio_livros_disponiveis(lista_livros):
 def relatorio_livros_emprestados(lista_livros):
     """
     Lista todos os livros que estão atualmente emprestados.
-    Complexidade: O(n) pois percorre toda a lista de livros.
     """
-    print("\n--- LIVROS EMPRESTADOS ---")
+    print("\n--- RELATÓRIO: LIVROS EMPRESTADOS ---")
     encontrados = 0
     
+    if not lista_livros:
+        print("A base de dados de livros está vazia.")
+        return 0
+
     for livro in lista_livros:
         if livro.get("disponivel") is False:
-            # Imprime os detalhes do livro de forma limpa
-            print(f"ID: {livro['id']} | Título: {livro['titulo']} | Autor: {livro['autor']}")
+            print(f"[ID {livro['id']}] {livro['titulo']} | Autor: {livro['autor']}")
             encontrados += 1
             
     if encontrados == 0:
         print("Nenhum livro emprestado no momento.")
+    else:
+        print(f"Total emprestados: {encontrados}")
         
     return encontrados
 
-def relatorio_historico_completo(historico):
+
+def relatorio_historico_completo(lista_historico):
     """
-    Imprime de forma formatada todo o histórico de empréstimos e devoluções.
-    Complexidade: O(n) onde n é o número de itens no histórico.
+    Imprime todo o histórico.
+    Adaptação: Tenta mostrar Nomes e Títulos se estiverem salvos no registro.
     """
     print("\n--- HISTÓRICO COMPLETO DE MOVIMENTAÇÕES ---")
-    if not historico:
+    
+    if not lista_historico:
         print("O histórico de movimentações está vazio.")
         return 0
 
-    for item in historico:
+    # Imprime do mais recente para o mais antigo (inverte a lista na visualização)
+    # Se preferir ordem cronológica, remova o [::-1]
+    for item in lista_historico[::-1]:
         tipo = item.get("tipo", "N/A")
-        livro_id = item.get("livro_id", "N/A")
         data = item.get("data", "N/A")
         
+        # Tenta pegar titulo/nome se existir, senão pega o ID
+        livro_display = item.get("livro_titulo", f"ID {item.get('livro_id')}")
+        
         if tipo == "Empréstimo":
-            usuario_id = item.get("usuario_id", "N/A")
-            print(f"[EMPRÉSTIMO] Livro ID: {livro_id} | Usuário ID: {usuario_id} | Data: {data}")
+            user_display = item.get("usuario_nome", f"ID {item.get('usuario_id')}")
+            print(f"[{data}] SAÍDA: '{livro_display}' -> {user_display}")
         
         elif tipo == "Devolução":
-            print(f"[DEVOLUÇÃO] Livro ID: {livro_id} | Data: {data}")
+            print(f"[{data}] RETORNO: '{livro_display}' voltou ao acervo.")
             
-    return len(historico)
+    return len(lista_historico)

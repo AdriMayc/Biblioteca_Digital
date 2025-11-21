@@ -1,42 +1,98 @@
 # livros.py
 
+# Adaptado para funcionar com Interface Gráfica (sem inputs manuais)
+
 # Estrutura base: lista de dicionários
 livros = []
 
+# Agora a função RECEBE os dados, em vez de pedir com input()
 def adicionar_livro(id, titulo, autor):
-    livros = {
-        "id":   id,
-        "titulo":  titulo, 
-        "autor":    autor,
-        "disponivel":   True
+    print("\n--- Adicionar Livro ---")
+    
+    # Validação básica para garantir que ID é número
+    try:
+        id = int(id)
+    except ValueError:
+        print("Erro: O ID precisa ser um número inteiro.")
+        return "Erro de ID"
+
+    # Verifica se o livro já existe
+    for l in livros:
+        if l["id"] == id:
+            print(f"Erro: Já existe um livro com ID {id}.")
+            return "ID Duplicado"
+
+    livro = {
+        "id": id,
+        "titulo": titulo,
+        "autor": autor,
+        "disponivel": True
     }
-    livros.append(livros)
-    return f"Livro '{titulo}' adicionado."
+
+    livros.append(livro)
+    print(f"Livro '{titulo}' adicionado com sucesso!")
+    return "Sucesso" # Retorno opcional para a interface saber
 
 
 def remover_livro(id):
+    print("\n--- Remover Livro ---")
+    try:
+        id = int(id)
+    except:
+        print("Erro: ID inválido.")
+        return
+
     for livro in livros:
-        if livro[id] == id:
+        if livro["id"] == id:
             livros.remove(livro)
-            return f"Livro ID {id} removido."
-    return "Livro não encontrado."
+            print(f"Livro ID {id} removido.")
+            return
+
+    print("Livro não encontrado para remoção.")
 
 
 def buscar_livro(id):
-    for livro in livros: # busca linear O(n)
-        if livros["id"] == id:
+    print("\n--- Buscar Livro ---")
+    try:
+        id = int(id)
+    except:
+        print("ID inválido.")
+        return
+
+    for livro in livros:  # busca linear = O(n)
+        if livro["id"] == id:
+            status = "Disponível" if livro["disponivel"] else "Indisponível"
+            print(f"Encontrado: {livro['titulo']} - {livro['autor']} ({status})")
             return livro
+
+    print("Livro não encontrado.")
     return None
 
 
 def listar_livros():
-    return livros
+    print("\n--- Lista de Livros ---")
+    if not livros:
+        print("Nenhum livro cadastrado.")
+    else:
+        print(f"Total de livros: {len(livros)}")
+        for livro in livros:
+            status = "Disponível" if livro["disponivel"] else "Emprestado"
+            print(f"[ID {livro['id']}] {livro['titulo']} - {status}")
 
 
-def marcar_disponibilidade(id, status: bool):
+def marcar_disponibilidade(id):
+    print("\n--- Alterar Disponibilidade ---")
+    try:
+        id = int(id)
+    except:
+        return
+
     for livro in livros:
         if livro["id"] == id:
-            livro["disponivel"] = status
-            return f"Livro ID {id} atualizado para {'disponivel' if status else 'indisponivel'}."
-    return "Livro não encontrado"
+            # Inverte o status atual
+            livro["disponivel"] = not livro["disponivel"]
+            novo_status = "Disponível" if livro["disponivel"] else "Indisponível"
+            print(f"Status de '{livro['titulo']}' alterado para: {novo_status}")
+            return
 
+    print("Livro não encontrado.")
